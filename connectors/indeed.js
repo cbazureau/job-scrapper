@@ -1,7 +1,6 @@
 /* global $ */
 module.exports = {
-  url: 'https://www.indeed.fr/emplois?q=Javascript&l=Lyon+%2869%29',
-  nextPage: (url) => `${url}?start=10`,
+  getUrl: (query, location, page) => `https://www.indeed.fr/emplois?q=${query}&l=${location}&start=${(10 * (page - 1))}`,
   link: (id) => `https://www.indeed.fr/viewjob?jk=${id}`,
   waitFor: '#resultsCol',
   callback: (arg, callback) => {
@@ -9,7 +8,8 @@ module.exports = {
     const data = [];
     $('.result').each((index, element) => {
       const id = $(element).find('h2').attr('id');
-      if (id) {
+      const isSponsored = $(element).find('.sponsoredGray').text();
+      if (id && !isSponsored) {
         data.push({
           id: id.replace('jl_', ''),
           site: 'indeed',
