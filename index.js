@@ -28,14 +28,17 @@ async function connectorRun(connector, page) {
 }
 
 (async () => {
+  const promises = [];
   // Loop through connector array
-  for (let connector of connectors) {
+  connectors.forEach(connector => {
     // Loop through 2 pages
     for (let i = 1; i <= 2; i += 1) {
-      const newJobs = await connectorRun(connector, i);
-      addJobs(newJobs);
+      promises.push(connectorRun(connector, i));
     }
-  }
+  });
+
+  const jobsByConnector = await Promise.all(promises);
+  jobsByConnector.forEach(newJobs => addJobs(newJobs));
 
   // TODO : save in a file or database
   // console.log(JSON.stringify(jobs, null, 2));
