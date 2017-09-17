@@ -1,9 +1,9 @@
 /* global $, moment */
 module.exports = {
-  getUrl: (query, location, page) => `https://www.indeed.fr/emplois?q=${query}&l=${location}&start=${(10 * (page - 1))}&sort=date`,
+  getUrl: (query, location, geo, page) => `https://www.indeed.fr/emplois?q=${query}&l=${location}&start=${(10 * (page - 1))}&sort=date`,
   waitFor: '#resultsCol',
   callback: (arg, callback) => {
-    // Here we're in the page context. It's like being in your browser's inspector tool
+    // Here we're in the page context
     const data = [];
     $('.result').each((index, element) => {
       const id = $(element).find('h2').attr('id');

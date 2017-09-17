@@ -1,9 +1,9 @@
 /* global $, moment */
 module.exports = {
-  getUrl: (query, location, page) => `https://remixjobs.com/Emploi-${query}-CDI?geoloc_addr=${location}&geoloc_lat=45.764043&geoloc_lng=4.835658999999964&geoloc_dist=50`,
-  waitFor: '.result-count',
+  getUrl: (query, location, geo, page) => `https://remixjobs.com/Emploi-${query}-CDI?geoloc_addr=${location}&geoloc_lat=${geo.lat}&geoloc_lng=${geo.lng}&geoloc_dist=${geo.dist}&page=${page}`,
+  waitFor: '.result',
   callback: (arg, callback) => {
-    // Here we're in the page context. It's like being in your browser's inspector tool
+    // Here we're in the page context
     const data = [];
     $('.job-list-item').each((index, element) => {
       const link = $(element).find('.title a:eq(0)').attr('href');

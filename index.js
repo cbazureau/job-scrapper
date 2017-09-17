@@ -5,16 +5,22 @@ const nick = new Nick();
 const indeed = require('./connectors/indeed');
 const remixjobs = require('./connectors/remixjobs');
 
+const connectors = [
+  indeed,
+  remixjobs
+];
+
+// Jobs search results
 const jobs = {};
 const addJobs = (newJobs) => newJobs.forEach(job => {
   const key = `${job.site}-${job.id}`;
   if (!jobs[key]) jobs[key] = job;
 });
 
-async function connectorRun(connector, i) {
+async function connectorRun(connector, page) {
   const tab = await nick.newTab();
-  await tab.open(connector.getUrl('Javascript', 'Lyon', i));
-  await tab.untilVisible(connector.waitFor); // Verify page loading
+  await tab.open(connector.getUrl('Javascript', 'Lyon', { lat: 45.764043, lng: 4.835658999999964, dist: 50 }, page));
+  await tab.untilVisible(connector.waitFor, 10000); // Verify page loading
   await tab.inject('./injects/jquery-3.2.1.min.js'); // Add Jquery
   await tab.inject('./injects/moment-2.18.1.min.js'); // Add Jquery
   const newJobs = await tab.evaluate(connector.callback);
@@ -22,18 +28,18 @@ async function connectorRun(connector, i) {
 }
 
 (async () => {
-  // TODO : Loop through connector array
-  // Loop through 3 pages
-  for (let i = 1; i <= 3; i += 1) {
-    const newJobs = await connectorRun(indeed, i);
-    addJobs(newJobs);
+  // Loop through connector array
+  for (let connector of connectors) {
+    // Loop through 2 pages
+    for (let i = 1; i <= 2; i += 1) {
+      const newJobs = await connectorRun(connector, i);
+      addJobs(newJobs);
+    }
   }
-
-  const newJobs = await connectorRun(remixjobs, 1);
-  addJobs(newJobs);
 
   // TODO : save in a file or database
   // console.log(JSON.stringify(jobs, null, 2));
+
   Object.keys(jobs).forEach(key => console.log(`${jobs[key].date} - ${jobs[key].site} - ${jobs[key].title} - ${jobs[key].location}`));
   console.log('Nb jobs found', Object.keys(jobs).length);
 })()
